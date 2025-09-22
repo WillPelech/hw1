@@ -21,12 +21,18 @@ constexpr float MAX_AMP       = 10.0f;
 constexpr char    BG_COLOUR[] = "#000000";
 constexpr Vector2 ORIGIN      = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
 constexpr Vector2 BASE_SIZE   = { (float) SIZE, (float) SIZE };
+constexpr float ORBIT_SPEED = 1;
 // Global Variables
 float     gScaleFactor   = SIZE,
           gAngle         = 0.0f,
-          gPulseTime     = 0.0f;
+          gPulseTime     = 0.0f,
+          labubuAngle    = 0.0f;
 Vector2   gPosition      = ORIGIN;
 Vector2   gScale         = BASE_SIZE;
+
+Vector2 louis_pos = ORIGIN;
+Vector2 lab1_pos= ORIGIN;
+// Vector2 louis_pos = ORIGIN;
 //declarations
 void initialise();
 void update();
@@ -85,15 +91,31 @@ void render() {
   Rectangle louisText = {
     0.0f, 0.0f, (float)louis.width,(float)louis.height
   };
-  DrawTexturePro(louis,louisText,destinationArea, objectOrigin,gAngle,WHITE);
-
+  Rectangle lab1Text = {
+    0.0f, 0.0f, (float)labubu1.width,(float)labubu1.height
+  };
+  DrawTexturePro(louis,louisText,destinationArea,louis_pos,gAngle,WHITE);
+  DrawTexturePro(labubu1,lab1Text,destinationArea,lab1_pos,gAngle,WHITE);
   EndDrawing();
 }
 
 
 void shutdown() { CloseWindow(); }
 
-void update() {}
+void update() {
+  gAngle+=ORBIT_SPEED;
+  louis_pos.x = 0.01*ORIGIN.x +0.01*cos(gAngle);
+  louis_pos.y =  0.01*ORIGIN.y +0.01*sin(gAngle);
+  
+  
+  float scale = 10;
+  labubuAngle+=ORBIT_SPEED*0.05;
+  lab1_pos.x = louis_pos.x +scale*(16*powf(sin(labubuAngle),3.0f));
+  lab1_pos.y = louis_pos.y +scale*(13*cos(labubuAngle) - 5*cos(2*labubuAngle) - 2*cos(3*labubuAngle) - cos(4*labubuAngle)); 
+
+
+  
+}
 
 int main(void) {
   initialise();
