@@ -10,6 +10,8 @@ using namespace std;
  * NYU School of Engineering Policies and Procedures on
  * Academic Misconduct.
  **/
+//https://stackoverflow.com/questions/7416445/what-is-the-use-of-the-c-str-function this is a stack overflow article for the extra credit
+
 //global variable
 AppStatus gAppStatus     = RUNNING;
 constexpr int   SCREEN_WIDTH  = 1600 / 2,
@@ -18,7 +20,7 @@ constexpr int   SCREEN_WIDTH  = 1600 / 2,
                 SIZE          = 200,
                 FRAME_LIMIT   = 100;
 constexpr float MAX_AMP       = 10.0f;
-constexpr char    BG_COLOUR[] = "#000000";
+std::string BG_COLOUR= "#000000";
 constexpr Vector2 ORIGIN      = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
 constexpr Vector2 BASE_SIZE   = { (float) SIZE, (float) SIZE };
 constexpr float ORBIT_SPEED = 1;
@@ -29,10 +31,12 @@ float     gScaleFactor   = SIZE,
           labubuAngle    = 0.0f;
 Vector2   gPosition      = ORIGIN;
 Vector2   gScale         = BASE_SIZE;
-
 Vector2 louis_pos = ORIGIN;
 Vector2 lab1_pos= ORIGIN;
-// Vector2 louis_pos = ORIGIN;
+Vector2 lab2_pos = ORIGIN;
+float increment_lab2 = 1;
+float amplitude_lab2= 50;
+float lab2_phase=0;
 //declarations
 void initialise();
 void update();
@@ -43,26 +47,9 @@ void processInput()
     if (WindowShouldClose()) gAppStatus = TERMINATED;
 }
 
-// class imageTexture {
-// public:
-//   Texture2D gTexture;
-//   Rectangle textArea; 
-//   //first we want to convert string into gtexture
-//   imageTexture(string url):gTexture(LoadTexture(url.c_str()))
-//    { 
-//     textArea.x= 0.0f;
-//     textArea.y=0.0f;
-//     textArea.width=(float)gTexture.width;
-//     textArea.height= (float)gTexture.height;
-//   };
- 
-// };
-
 Texture2D louis;
 Texture2D labubu1;
 Texture2D labubu2;
-// imageTexture *labubu1 = nullptr;
-// imageTexture *labubu2 = nullptr;
 void initialise(){
   InitWindow(SCREEN_WIDTH,SCREEN_HEIGHT,"Textures");
   louis = LoadTexture("assets/louis.jpg");
@@ -74,7 +61,7 @@ void initialise(){
 
 void render() {
   BeginDrawing();
-  ClearBackground(ColorFromHex(BG_COLOUR));
+  ClearBackground(ColorFromHex(BG_COLOUR.c_str()));
   Rectangle destinationArea = {
         gPosition.x,
         gPosition.y,
@@ -94,8 +81,12 @@ void render() {
   Rectangle lab1Text = {
     0.0f, 0.0f, (float)labubu1.width,(float)labubu1.height
   };
+  Rectangle lab2Text = {
+    0.0f, 0.0f, (float)labubu1.width,(float)labubu1.height
+  };
   DrawTexturePro(louis,louisText,destinationArea,louis_pos,gAngle,WHITE);
   DrawTexturePro(labubu1,lab1Text,destinationArea,lab1_pos,gAngle,WHITE);
+  DrawTexturePro(labubu2,lab2Text,destinationArea,lab2_pos,0,WHITE);
   EndDrawing();
 }
 
@@ -112,9 +103,14 @@ void update() {
   labubuAngle+=ORBIT_SPEED*0.05;
   lab1_pos.x = louis_pos.x +scale*(16*powf(sin(labubuAngle),3.0f));
   lab1_pos.y = louis_pos.y +scale*(13*cos(labubuAngle) - 5*cos(2*labubuAngle) - 2*cos(3*labubuAngle) - cos(4*labubuAngle)); 
+   
 
-
-  
+  // the next pattern I want to be a simple harmonic oscillator where the background is determined by 
+  //
+  lab2_phase +=0.1f;
+  lab2_pos.x += (lab2_pos.x > 400 || lab2_pos.x < -250) ? (increment_lab2 *= -1) : increment_lab2;
+  lab2_pos.y = ORIGIN.y-100 + amplitude_lab2 * sin(lab2_phase);
+  BG_COLOUR = (increment_lab2>0) ? std::string("#008000") : std::string("#000080");
 }
 
 int main(void) {
@@ -128,3 +124,20 @@ int main(void) {
   return 0;
 
 }
+// class imageTexture {
+// public:
+//   Texture2D gTexture;
+//   Rectangle textArea; 
+//   //first we want to convert string into gtexture
+//   imageTexture(string url):gTexture(LoadTexture(url.c_str()))
+//    { 
+//     textArea.x= 0.0f;
+//     textArea.y=0.0f;
+//     textArea.width=(float)gTexture.width;
+//     textArea.height= (float)gTexture.height;
+//   };
+ 
+// };
+
+// imageTexture *labubu1 = nullptr;
+// imageTexture *labubu2 = nullptr;
